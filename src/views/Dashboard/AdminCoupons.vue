@@ -24,10 +24,10 @@ export default {
   data() {
     return {
       isLoading: false,
-    }
+    };
   },
   mounted() {
     
   },
-}
+};
 </script>
