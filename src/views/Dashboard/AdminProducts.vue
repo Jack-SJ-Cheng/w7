@@ -1,11 +1,11 @@
 <template>
   <div class="container">
-    <Loading :active="isLoading"></Loading>
+    <Loading :active='isLoading'></Loading>
     <button type="button" class="btn btn-primary mt-3"
-      @click="getInfo(productInfo, true)">
+      @click="getInfo(true)">
       新增產品
     </button>
-    <table class="table mt-3 align-middle sticky-top">
+    <table class="table mt-3 align-middle">
       <thead>
         <tr>
           <th class="text-center">分類</th>
@@ -31,7 +31,7 @@
               <span class="text-secondary" v-else>未啟用</span>
           </td>
           <td class="text-center">
-            <button type="button" class="btn text-primary" @click="getInfo(item, false)">
+            <button type="button" class="btn text-primary" @click="getInfo(false, item)">
               <span class="material-icons">
                 edit
               </span>
@@ -48,7 +48,8 @@
       </tbody>
     </table>
     <Pagination :page='pagination' @get-data='getData'></Pagination>
-    <ProductModal ref="productModal" :info='productInfo'></ProductModal>
+    <ProductModal ref="productModal" :info='productInfo'
+      :is-new='isNew' @get='getData'></ProductModal>
   </div>
 </template>
 
@@ -63,6 +64,7 @@ export default {
   },
   data() {
     return {
+      isNew: true,
       products: [],
       pagination: {},
       isLoading: false,
@@ -95,8 +97,13 @@ export default {
           console.log(err);
         });
     },
-    getInfo(item) {
-      this.productInfo = JSON.parse(JSON.stringify(item));
+    getInfo(isNew, item) {
+      this.isNew = isNew;
+      if (isNew) {
+        this.productInfo = {};
+      } else {
+        this.productInfo = JSON.parse(JSON.stringify(item));
+      }
       this.$refs.productModal.openModal();
     },
   },

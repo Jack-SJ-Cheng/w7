@@ -19,6 +19,11 @@ import 'vue-loading-overlay/dist/vue-loading.css';
 import axios from 'axios';
 import VueAxios from 'vue-axios';
 import bootstrap from 'bootstrap';
+
+// 自定義全域方法
+import timeTransformer from './assets/javascript/timeTransformer';
+import toCurrency from './assets/javascript/toCurrency';
+
 import App from './App.vue';
 import router from './router';
 
@@ -34,6 +39,8 @@ configure({
 setLocale('zh_TW');
 
 const app = createApp(App);
+app.config.globalProperties.$timeTransformer = timeTransformer;
+app.config.globalProperties.$toCurrency = toCurrency;
 app.component('Loading', Loading);
 app.component('Form', Form);
 app.component('Field', Field);
