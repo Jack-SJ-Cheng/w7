@@ -27,7 +27,7 @@
               </tr>
               <tr>
                 <th>訂購姓名</th>
-                <td>{{ order.user.name }}</td>
+                <td>{{ order.user?.name }}</td>
               </tr>
               <tr>
                 <th>訂單金額</th>
