@@ -1,14 +1,14 @@
 <template>
   <div class="container">
-    <Loading :active='isLoading'></Loading>
+    <Loading :active="isLoading"></Loading>
     <table class="table mt-3 align-middle">
       <thead>
         <tr>
-          <th class="text-center" width='120'>訂單日期</th>
+          <th class="text-center" width="120">訂單日期</th>
           <th class="text-center">姓名</th>
-          <th class="text-center" width="120">狀態</th>
+          <th class="text-center" width="120">付款狀態</th>
           <th class="text-center">訂單金額</th>
-          <th class="text-center" width='80'>查看細節</th>
+          <th class="text-center" width="80">查看細節</th>
           <th class="text-center" width="80">刪除</th>
         </tr>
       </thead>
@@ -19,43 +19,54 @@
           </td>
           <td class="text-center">{{ item.user.name }}</td>
           <td class="text-center">
-            <div v-if='item.is_paid' class="text-success">已付款</div>
-            <div v-else class="text-danger">未付款</div>
+            <div class="form-check form-switch">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                :id="`paidSwitch${item.id}`"
+                v-model="item.is_paid"
+                @change="updatePaid(item)"
+              />
+              <span v-if="item.is_paid" class="text-success">已付款</span>
+              <span v-else class="text-danger">未付款</span>
+            </div>
           </td>
           <td class="text-center">
             {{ $toCurrency(item.total) }}
           </td>
           <td class="text-center">
-            <button class="btn text-primary" @click="openModal(item)" type="button">
+            <button
+              class="btn text-primary"
+              @click="openModal(item)"
+              type="button"
+            >
               <span class="material-icons"> find_in_page </span>
             </button>
           </td>
           <td class="text-center">
             <button class="btn text-danger" @click="openDeleteModal(item)">
-              <span class="material-icons">
-                delete_outline
-              </span>
+              <span class="material-icons"> delete_outline </span>
             </button>
           </td>
         </tr>
       </tbody>
     </table>
-    <Pagination :page='pagination' @get-data='getData'></Pagination>
-    <OrderModal ref="orderModal" :order='order'></OrderModal>
-    <DeleteModal ref="deleteModal" :order='order'></DeleteModal>
+    <Pagination :page="pagination" @get-data="getData"></Pagination>
+    <OrderModal ref="orderModal" :order="order"></OrderModal>
+    <DeleteOrderModal ref="deleteModal" :order="order"></DeleteOrderModal>
   </div>
 </template>
 
 <script>
 import Pagination from '../../components/Pagination.vue';
 import OrderModal from '../../components/OrderModal.vue';
-import DeleteModal from '../../components/DeleteModal.vue';
+import DeleteOrderModal from '../../components/DeleteOrderModal.vue';
 
 export default {
   components: {
     OrderModal,
     Pagination,
-    DeleteModal,
+    DeleteOrderModal,
   },
   data() {
     return {
@@ -87,6 +98,16 @@ export default {
     openDeleteModal(item) {
       this.$refs.deleteModal.openModal();
       this.order = JSON.parse(JSON.stringify(item));
+    },
+    updatePaid(item) {
+      this.isLoading = true;
+      const api = `${process.env.VUE_APP_API}/api/${process.env.VUE_APP_PATH}/admin/order/${item.id}`;
+      const paid = {
+        is_paid: item.is_paid,
+      };
+      this.$http.put(api, { data: paid }).then(() => {
+        this.isLoading = false;
+      });
     },
   },
   mounted() {

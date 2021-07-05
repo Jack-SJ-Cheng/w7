@@ -10,7 +10,7 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header bg-danger text-light">
-          <h5 class="modal-title" id="exampleModalLabel">刪除產品</h5>
+          <h5 class="modal-title" id="exampleModalLabel">刪除訂單</h5>
           <button
             type="button"
             class="btn-close"
@@ -19,8 +19,22 @@
           ></button>
         </div>
         <div class="modal-body">
-          <p>確定要刪除 <span class="h5">{{ product.title }}</span> 嗎?</p>
-          <p>(刪除後無法恢復)</p>
+          <table class="table">
+            <tbody>
+              <tr>
+                <th>訂單日期</th>
+                <td>{{ $timeTransformer(order.create_at) }}</td>
+              </tr>
+              <tr>
+                <th>訂購姓名</th>
+                <td>{{ order.user?.name }}</td>
+              </tr>
+              <tr>
+                <th>訂單金額</th>
+                <td>NT$ {{ $toCurrency(order.total) }}</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
         <div class="modal-footer">
           <button
@@ -34,7 +48,6 @@
             type="button"
             class="btn btn-danger"
             data-bs-dismiss="modal"
-            @click="deleteItem(product.id)"
           >
             確認刪除
           </button>
@@ -48,26 +61,19 @@
 import { Modal } from 'bootstrap';
 
 export default {
-  props: ['product'],
+  props: ['order'],
   data() {
     return {
       modal: '',
     };
   },
   methods: {
-    deleteItem(id) {
-      const api = `${process.env.VUE_APP_API}/api/${process.env.VUE_APP_PATH}/admin/product/${id}`;
-      this.$http
-        .delete(api)
-        .then(() => {
-          this.$emit('getData');
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    },
     openModal() {
       this.modal.show();
+    },
+    deleteOrder(id) {
+      const api = `${process.env.VUE_APP_API}/api/${process.env.VUE_APP_PATH}/admin/order/${id}`;
+      this.$http.delete(api).then().catch();
     },
   },
   mounted() {
